@@ -1,0 +1,117 @@
+<html>
+<head>
+<title>Android to JavaScript with JSON</title>
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+</head>
+<script language="JavaScript">
+var cmdHistory = new Array();
+function startup() {
+	try {
+		window.calc.Info("Starting up....");
+		cmdHistory[cmdHistory.length] = "startup";
+	} catch (ee) {
+		
+	}
+}
+
+function getWebContent(url) {
+    $('#data').val(url);
+    try {
+        $.ajax({
+            url: url
+            ,type: 'GET'
+            ,crossDomain:true
+            ,success: function(d){
+                try {
+                    $('#data').val(d);
+                } catch (e) {
+                    // handle error
+                    alert('error: ' + e);
+                }
+            }
+            ,error: function (a,b,c) {
+                alert(a);
+            }
+            ,cache: false
+        });
+    } catch (e) {
+        alert('error in GET');
+    }
+}
+
+function PerformSimpleCalculation(formula) {
+	try {
+		cmdHistory[cmdHistory.length] = "PerformSimpleCalculation";
+		var answer = eval(String(formula));
+		document.getElementById('data').value = answer;
+		window.calc.setAnswer(answer);
+	}	catch (ee) 	{
+		window.calc.Error(ee);x
+	}
+}
+function PerformComplexCalculation(andmethod) {
+	try	{
+		/*
+		 * the argument to this function is a single object with two "members or properties"
+		 * operation: this is a string naming what we want the function to do.
+		 * array of arguments: this is an array of integers
+		 * 
+		 */
+		//alert(andmethod.operation);
+		//alert(andmethod.arguments.length);
+		if (andmethod.operation == "addarray") {
+			cmdHistory[cmdHistory.length] = "PerformComplexCalculation-addarray";
+			var i;
+			var result = 0;
+			for (i=0;i<andmethod.arguments.length;i++) {
+				result += andmethod.arguments[i];
+			}
+			document.getElementById('data').value = result;
+			window.calc.setAnswer(result);
+		}
+		if (andmethod.operation == "multarray") {
+			cmdHistory[cmdHistory.length] = "PerformCompleCalculation-multarray";
+			var i;
+			var result = 1;
+			for (i=0;i<andmethod.arguments.length;i++) {
+				result *= andmethod.arguments[i];
+			}
+			document.getElementById('data').value = result;
+			window.calc.setAnswer(result);			
+		}
+	}	catch (ee)	{
+		window.calc.Error(ee);
+	}
+}
+function dynamicfunction()
+{
+	try {
+		cmdHistory[cmdHistory.length] = "PerformCompleCalculation-dynamic";
+		eval(String(window.calc.GetSomeFunction()));
+		var result = dynamicFunc(parseInt(document.getElementById('data').value));
+		document.getElementById('data').value = result;
+	}catch (ee) {
+		alert(ee);
+	}
+}
+</script>
+<body >
+<center>
+<h3>Running in Web View :)</h3>
+this is some sample text here <br />
+<input type="text" id="data" value="starting value"><br />
+<button onclick="window.calc.Info(document.getElementById('data').value);">Log Info</button>&nbsp;&nbsp;
+<button onclick="window.calc.Error(document.getElementById('data').value);">Log Error</button><br />
+<button onclick="dynamicfunction();">Dynamic</button>
+<button onclick="alert(String(window.calc.getIterations()));">How Many Calls</button>
+<button onclick="window.calc.SendHistory(JSON.stringify(cmdHistory));">History</button>
+<button onclick="if (window.confirm('End App?')) window.calc.EndApp();">Kill This App</button><br />
+</center>
+</body>
+</html>
+
+
+
